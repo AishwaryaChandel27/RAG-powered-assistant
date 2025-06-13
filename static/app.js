@@ -1,11 +1,44 @@
-// RAG Assistant JavaScript functionality
+// Publications Assistant JavaScript functionality
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips if any
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
+    // Theme management
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const htmlElement = document.documentElement;
+    
+    // Check for saved theme preference or default to light
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    
+    // Apply saved theme
+    if (currentTheme === 'dark') {
+        htmlElement.setAttribute('data-theme', 'dark');
+        themeIcon.setAttribute('data-feather', 'moon');
+    } else {
+        htmlElement.removeAttribute('data-theme');
+        themeIcon.setAttribute('data-feather', 'sun');
+    }
+    
+    // Theme toggle functionality
+    if (themeToggle) {
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                // Switch to light theme
+                htmlElement.removeAttribute('data-theme');
+                themeIcon.setAttribute('data-feather', 'sun');
+                localStorage.setItem('theme', 'light');
+            } else {
+                // Switch to dark theme
+                htmlElement.setAttribute('data-theme', 'dark');
+                themeIcon.setAttribute('data-feather', 'moon');
+                localStorage.setItem('theme', 'dark');
+            }
+            
+            // Update feather icons
+            feather.replace();
+        });
+    }
 
     // Handle example query clicks
     const exampleQueries = document.querySelectorAll('.example-query');
@@ -18,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (queryInput) {
                 queryInput.value = queryText;
                 queryInput.focus();
-                // Scroll to the query form
                 queryInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
@@ -29,87 +61,44 @@ document.addEventListener('DOMContentLoaded', function() {
     if (queryForm) {
         queryForm.addEventListener('submit', function(e) {
             const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
             
-            // Show loading state
-            submitBtn.innerHTML = '<i data-feather="loader" class="me-2"></i>Processing...';
-            submitBtn.disabled = true;
-            
-            // Re-render feather icons
-            feather.replace();
-            
-            // Add loading class to form
-            this.classList.add('loading');
+            if (submitBtn) {
+                // Show loading state
+                submitBtn.innerHTML = '<i data-feather="loader"></i>';
+                submitBtn.disabled = true;
+                feather.replace();
+            }
         });
     }
 
     // Auto-resize textarea
-    const textarea = document.getElementById('query');
-    if (textarea) {
-        textarea.addEventListener('input', function() {
+    if (queryInput) {
+        queryInput.addEventListener('input', function() {
             this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
+            this.style.height = Math.min(this.scrollHeight, 150) + 'px';
         });
     }
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
         // Ctrl/Cmd + Enter to submit form
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            const form = document.querySelector('form[action*="ask_question"]');
-            if (form) {
-                form.submit();
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && queryInput === document.activeElement) {
+            e.preventDefault();
+            if (queryForm) {
+                queryForm.submit();
             }
         }
         
         // Focus search with '/' key
         if (e.key === '/' && !e.target.matches('input, textarea')) {
             e.preventDefault();
-            const queryInput = document.getElementById('query');
             if (queryInput) {
                 queryInput.focus();
             }
         }
     });
 
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-
-    // Add copy functionality for code blocks
-    const codeBlocks = document.querySelectorAll('pre code');
-    codeBlocks.forEach(codeBlock => {
-        const pre = codeBlock.parentNode;
-        const copyBtn = document.createElement('button');
-        copyBtn.className = 'btn btn-sm btn-outline-secondary position-absolute top-0 end-0 m-2';
-        copyBtn.innerHTML = '<i data-feather="copy" width="14" height="14"></i>';
-        copyBtn.setAttribute('title', 'Copy code');
-        
-        pre.style.position = 'relative';
-        pre.appendChild(copyBtn);
-        
-        copyBtn.addEventListener('click', function() {
-            navigator.clipboard.writeText(codeBlock.textContent).then(() => {
-                this.innerHTML = '<i data-feather="check" width="14" height="14"></i>';
-                setTimeout(() => {
-                    this.innerHTML = '<i data-feather="copy" width="14" height="14"></i>';
-                    feather.replace();
-                }, 2000);
-            });
-        });
-    });
-
-    // Update feather icons after dynamic content
+    // Initialize feather icons
     feather.replace();
 });
 

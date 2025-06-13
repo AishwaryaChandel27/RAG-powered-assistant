@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AI/ML Publications RAG Assistant{% endblock %}</title>
+    <title>{% block title %}AI/ML Publications Assistant{% endblock %}</title>
     
-    <!-- Bootstrap CSS with Replit theme -->
-    <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Feather Icons -->
     <script src="https://unpkg.com/feather-icons"></script>
@@ -16,11 +16,11 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
-                <i data-feather="book-open" class="me-2"></i>
-                AI/ML Publications RAG Assistant
+                <i data-feather="search" class="me-2"></i>
+                <span class="fw-bold">Publications Assistant</span>
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -28,62 +28,52 @@
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('index') }}">
-                            <i data-feather="home" class="me-1"></i>Home
-                        </a>
+                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('query_history') }}">
-                            <i data-feather="clock" class="me-1"></i>History
-                        </a>
+                        <a class="nav-link" href="{{ url_for('query_history') }}">History</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('system_status') }}">
-                            <i data-feather="activity" class="me-1"></i>Status
-                        </a>
+                        <a class="nav-link" href="{{ url_for('system_status') }}">Status</a>
                     </li>
                 </ul>
+                
+                <!-- Theme Toggle -->
+                <button class="btn btn-outline-secondary" id="theme-toggle" type="button">
+                    <i data-feather="sun" id="theme-icon"></i>
+                </button>
             </div>
         </div>
     </nav>
 
     <!-- Flash Messages -->
-    <div class="container mt-3">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
                 {% for category, message in messages %}
                     <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
-                        <i data-feather="{% if category == 'error' %}alert-circle{% elif category == 'success' %}check-circle{% else %}info{% endif %}" class="me-2"></i>
                         {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 {% endfor %}
-            {% endif %}
-        {% endwith %}
-    </div>
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <!-- Main Content -->
-    <main>
+    <main class="flex-grow-1">
         {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
-    <footer class="mt-5 py-4 border-top">
+    <footer class="py-3 mt-auto border-top">
         <div class="container">
-            <div class="row">
-                <div class="col-md-8">
-                    <p class="text-muted mb-0">
-                        <i data-feather="database" class="me-1"></i>
-                        RAG-powered assistant for AI/ML publications using LangChain, FAISS, and OpenAI
-                    </p>
-                </div>
-                <div class="col-md-4 text-md-end">
-                    <small class="text-muted">
-                        Built with Flask & Bootstrap
-                    </small>
-                </div>
+            <div class="text-center">
+                <small class="text-muted">
+                    AI/ML Publications Assistant - Built with Flask & Bootstrap
+                </small>
             </div>
         </div>
     </footer>
