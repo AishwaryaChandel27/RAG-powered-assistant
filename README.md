@@ -110,7 +110,7 @@ Publications are stored in JSON format with the following structure:
 1. **Download Project Files**
    ```bash
    # If using Git
-   git clone <repository-url>
+   git clone https://github.com/AishwaryaChandel27/RAG-powered-assistant
    cd ai-ml-rag-assistant
    
    # Or download and extract ZIP file
@@ -147,8 +147,9 @@ Publications are stored in JSON format with the following structure:
 #### Environment Variables
 ```bash
 # Application Settings
-SESSION_SECRET=your-secure-session-key
 FLASK_DEBUG=1
+#OpenAi Api
+OPENAI_API_KEY = Your OPENAI_API_KEY 
 
 # Database Configuration
 DATABASE_URL=sqlite:///rag_assistant.db
@@ -303,70 +304,6 @@ python main.py  # Will recreate database
 4. Make changes with appropriate tests
 5. Submit a pull request
 
-### Code Standards
-- Follow PEP 8 style guidelines
-- Include docstrings for all functions
-- Add comprehensive error handling
-- Write unit tests for new features
-
-### Feature Requests
-- Document use cases and requirements
-- Provide example queries or scenarios
-- Consider backward compatibility
-- Include performance implications
-
-## 📄 License & Usage
-
-### Publication Data
-- All publication content is used with appropriate attribution
-- Authors and licensing information preserved in metadata
-- Content used for educational and research purposes
-
-### Code License
-- Open source implementation
-- Suitable for educational and commercial use
-- Attribution required for derivative works
-
-### Compliance Notes
-- Respects robots.txt and content usage policies
-- Implements appropriate rate limiting
-- Maintains data privacy and security standards
-
-## 🔮 Future Enhancements
-
-### Planned Features
-- **Vector Search Integration**: FAISS-based semantic search when API quotas allow
-- **Advanced Analytics**: Query pattern analysis and usage statistics
-- **Multi-format Support**: PDF, DOC, and web content ingestion
-- **API Endpoints**: RESTful API for programmatic access
-- **User Management**: Authentication and personalized query history
-
-### Scalability Improvements
-- **Distributed Search**: Multi-node search capabilities
-- **Caching Layer**: Redis integration for improved performance
-- **Load Balancing**: Support for high-availability deployments
-- **Monitoring**: Comprehensive metrics and alerting systems
-
-### Integration Possibilities
-- **Jupyter Notebook**: Direct integration for research workflows
-- **Slack/Discord Bots**: Conversational interfaces for team use
-- **Mobile Applications**: Native mobile apps for on-the-go access
-- **Browser Extensions**: Quick access from any webpage
-
-## 📞 Support & Community
-
-### Getting Help
-- Check the troubleshooting section for common issues
-- Review the usage guide for detailed instructions
-- Examine the codebase for implementation details
-
-### Contributing Back
-- Share your experience with the community
-- Report bugs and suggest improvements
-- Contribute to documentation and examples
-- Help other users in community forums
-
----
 
 *Built with modern web technologies and best practices for AI/ML research and education.*
    
