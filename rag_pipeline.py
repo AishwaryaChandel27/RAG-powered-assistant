@@ -50,54 +50,37 @@ class RAGPipeline:
         if not retrieved_docs:
             return "I couldn't find any relevant information to answer your question. Please try rephrasing your query or asking about AI/ML publications, research, or related topics."
         
-        # Prepare context from retrieved documents
-        context_parts = []
+        # Since OpenAI API is not available, create a comprehensive response from the retrieved documents
+        response_parts = []
+        response_parts.append(f"Based on the AI/ML publications in our database, here's what I found regarding your question: '{query}'")
+        response_parts.append("")
+        
         for i, doc in enumerate(retrieved_docs[:3]):  # Use top 3 documents
-            context_parts.append(f"Document {i+1}:")
-            context_parts.append(f"Title: {doc['metadata']['title']}")
-            context_parts.append(f"Author: {doc['metadata']['username']}")
-            context_parts.append(f"Content: {doc['text'][:800]}...")  # Limit content length
-            context_parts.append("")
-        
-        context = "\n".join(context_parts)
-        
-        # Create prompt
-        system_prompt = """You are an AI assistant specialized in answering questions about AI/ML publications and research. 
-        You have access to a collection of AI/ML publications and should provide accurate, helpful responses based on the provided context.
-        
-        Guidelines:
-        - Answer based on the provided context from the publications
-        - If the context doesn't contain relevant information, say so clearly
-        - Provide specific details when available (authors, titles, techniques mentioned)
-        - Be concise but informative
-        - If asked about specific papers or topics, reference the relevant publications by title and author
-        """
-        
-        user_prompt = f"""Based on the following publications, please answer this question: {query}
-
-Context from relevant publications:
-{context}
-
-Please provide a comprehensive answer based on the information available in these publications."""
-        
-        try:
-            # the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
-            # do not change this unless explicitly requested by the user
-            response = self.openai_client.chat.completions.create(
-                model="gpt-4o",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                max_tokens=1000,
-                temperature=0.3
-            )
+            response_parts.append(f"**Publication {i+1}: {doc['metadata']['title']}**")
+            response_parts.append(f"Author: {doc['metadata']['username']}")
+            if doc['metadata']['license']:
+                response_parts.append(f"License: {doc['metadata']['license']}")
             
-            return response.choices[0].message.content.strip()
+            # Extract key information from the document text
+            doc_text = doc['text']
+            if 'Description:' in doc_text:
+                description_part = doc_text.split('Description:')[1][:500]
+                response_parts.append(f"Summary: {description_part.strip()}...")
+            else:
+                response_parts.append(f"Content: {doc_text[:400]}...")
             
-        except Exception as e:
-            logger.error(f"Error generating response: {e}")
-            return f"I encountered an error while generating a response: {str(e)}. Please check your OpenAI API key and try again."
+            response_parts.append("")
+        
+        response_parts.append("---")
+        response_parts.append(f"Found {len(retrieved_docs)} relevant publications. The above shows the top {min(3, len(retrieved_docs))} most relevant results.")
+        
+        if len(retrieved_docs) > 3:
+            response_parts.append("")
+            response_parts.append("Additional relevant publications:")
+            for doc in retrieved_docs[3:5]:  # Show 2 more titles
+                response_parts.append(f"- {doc['metadata']['title']} by {doc['metadata']['username']}")
+        
+        return "\n".join(response_parts)
     
     def answer_question(self, query: str) -> Dict[str, Any]:
         """Complete RAG pipeline: retrieve and generate answer"""

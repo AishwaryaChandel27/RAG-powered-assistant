@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+
+{% block title %}System Status - AI/ML Publications RAG Assistant{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 mb-3">
+                <i data-feather="activity" class="me-2"></i>
+                System Status
+            </h1>
+            <p class="lead text-muted">
+                Monitor system health, performance metrics, and data statistics
+            </p>
+        </div>
+    </div>
+
+    <!-- Status Overview -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i data-feather="{% if status.initialized %}check-circle{% else %}alert-circle{% endif %}" 
+                           class="text-{% if status.initialized %}success{% else %}warning{% endif %}" 
+                           width="48" height="48"></i>
+                    </div>
+                    <h5 class="card-title">System Status</h5>
+                    <p class="card-text">
+                        <span class="badge bg-{% if status.initialized %}success{% else %}warning{% endif %} fs-6">
+                            {% if status.initialized %}Operational{% else %}Initializing{% endif %}
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i data-feather="database" class="text-info" width="48" height="48"></i>
+                    </div>
+                    <h5 class="card-title">Publications</h5>
+                    <p class="card-text">
+                        <span class="display-6 text-info">
+                            {{ status.vector_store_stats.total_documents }}
+                        </span>
+                        <br>
+                        <small class="text-muted">documents indexed</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i data-feather="search" class="text-primary" width="48" height="48"></i>
+                    </div>
+                    <h5 class="card-title">Search Engine</h5>
+                    <p class="card-text">
+                        <span class="badge bg-primary fs-6">
+                            {{ status.vector_store_stats.search_method }}
+                        </span>
+                        <br>
+                        <small class="text-muted">ready for queries</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Statistics -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="bar-chart-2" class="me-2"></i>
+                        System Statistics
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">Data Processing</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i data-feather="file-text" class="me-2 text-muted" width="16" height="16"></i>
+                                    <strong>Total Documents:</strong> {{ status.vector_store_stats.total_documents }}
+                                </li>
+                                <li class="mb-2">
+                                    <i data-feather="search" class="me-2 text-muted" width="16" height="16"></i>
+                                    <strong>Search Method:</strong> {{ status.vector_store_stats.search_method }}
+                                </li>
+                                <li class="mb-2">
+                                    <i data-feather="database" class="me-2 text-muted" width="16" height="16"></i>
+                                    <strong>Database:</strong> SQLite (Local)
+                                </li>
+                                <li class="mb-2">
+                                    <i data-feather="cpu" class="me-2 text-muted" width="16" height="16"></i>
+                                    <strong>Processing:</strong> Real-time
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold mb-3">System Configuration</h6>
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <i data-feather="server" class="me-2 text-muted" width="16" height="16"></i>
+                                    <strong>Web Framework:</strong> Flask
+                                </li>
+                                <li class="mb-2">
+                                    <i data-feather="layers" class="me-2 text-muted" width="16" height="16"></i>
+                                    <strong>Frontend:</strong> Bootstrap 5
+                                </li>
+                                <li class="mb-2">
+                                    <i data-feather="{% if status.initialized %}check{% else %}x{% endif %}" 
+                                       class="me-2 text-{% if status.initialized %}success{% else %}danger{% endif %}" 
+                                       width="16" height="16"></i>
+                                    <strong>System Ready:</strong> 
+                                    {% if status.initialized %}Yes{% else %}No{% endif %}
+                                </li>
+                                <li class="mb-2">
+                                    <i data-feather="shield" class="me-2 text-muted" width="16" height="16"></i>
+                                    <strong>Data Source:</strong> Local JSON Publications
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="settings" class="me-2"></i>
+                        System Management
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        Use these tools to manage and maintain the RAG system.
+                    </p>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-secondary">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i data-feather="refresh-cw" class="me-2"></i>
+                                        Reinitialize System
+                                    </h6>
+                                    <p class="card-text text-muted">
+                                        Reload publication data and rebuild search index.
+                                    </p>
+                                    <form method="POST" action="{{ url_for('initialize_system') }}">
+                                        <button type="submit" class="btn btn-secondary">
+                                            <i data-feather="refresh-cw" class="me-2"></i>
+                                            Reinitialize
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-info">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i data-feather="clock" class="me-2"></i>
+                                        Query History
+                                    </h6>
+                                    <p class="card-text text-muted">
+                                        Review previous questions and system usage.
+                                    </p>
+                                    <a href="{{ url_for('query_history') }}" class="btn btn-info">
+                                        <i data-feather="clock" class="me-2"></i>
+                                        View History
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="trending-up" class="me-2"></i>
+                        Performance Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <i data-feather="zap" class="text-warning" width="32" height="32"></i>
+                            </div>
+                            <h6>Response Time</h6>
+                            <p class="text-muted">
+                                Typical query processing takes 1-3 seconds for text search
+                            </p>
+                        </div>
+                        
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <i data-feather="target" class="text-success" width="32" height="32"></i>
+                            </div>
+                            <h6>Search Accuracy</h6>
+                            <p class="text-muted">
+                                Keyword-based matching with relevance scoring
+                            </p>
+                        </div>
+                        
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <i data-feather="shield-check" class="text-info" width="32" height="32"></i>
+                            </div>
+                            <h6>Data Security</h6>
+                            <p class="text-muted">
+                                Local processing with no external API dependencies
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

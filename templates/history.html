@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Query History - AI/ML Publications RAG Assistant{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 mb-3">
+                <i data-feather="clock" class="me-2"></i>
+                Query History
+            </h1>
+            <p class="lead text-muted">
+                Review your previous questions and the system's responses
+            </p>
+        </div>
+    </div>
+
+    <!-- History List -->
+    {% if queries %}
+    <div class="row">
+        <div class="col-12">
+            {% for query in queries %}
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>Query #{{ loop.index }}</strong>
+                        <small class="text-muted ms-2">{{ query.timestamp.strftime('%B %d, %Y at %I:%M %p') }}</small>
+                    </div>
+                    {% if query.response_time %}
+                    <small class="text-muted">
+                        <i data-feather="zap" class="me-1" width="14" height="14"></i>
+                        {{ "%.2f"|format(query.response_time) }}s
+                    </small>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <h6 class="fw-bold mb-2">
+                        <i data-feather="message-circle" class="me-2 text-primary" width="16" height="16"></i>
+                        Question:
+                    </h6>
+                    <p class="mb-3 ps-3">{{ query.query }}</p>
+                    
+                    <h6 class="fw-bold mb-2">
+                        <i data-feather="message-square" class="me-2 text-success" width="16" height="16"></i>
+                        Answer:
+                    </h6>
+                    <div class="ps-3">
+                        <div class="border-start border-success border-3 ps-3">
+                            {{ query.response | replace('\n', '<br>') | safe }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i data-feather="clock" class="text-muted mb-3" width="64" height="64"></i>
+                    <h4 class="text-muted">No Query History</h4>
+                    <p class="text-muted mb-4">
+                        You haven't asked any questions yet. Start by asking about AI/ML topics!
+                    </p>
+                    <a href="{{ url_for('index') }}" class="btn btn-primary">
+                        <i data-feather="home" class="me-2"></i>
+                        Go to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
