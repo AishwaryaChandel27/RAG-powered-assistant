@@ -3,7 +3,7 @@ import logging
 import time
 from typing import List, Dict, Any, Optional
 from openai import OpenAI
-from vector_store import VectorStore
+from simple_search import simple_search
 from data_processor import PublicationProcessor
 
 logger = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ class RAGPipeline:
     
     def __init__(self):
         self.openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "your-api-key-here"))
-        self.vector_store = VectorStore()
+        self.search_engine = simple_search
         self.processor = PublicationProcessor()
         self.is_initialized = False
     
@@ -21,24 +21,21 @@ class RAGPipeline:
         """Initialize the RAG pipeline"""
         logger.info("Initializing RAG pipeline...")
         
-        # Try to load existing vector store
-        if self.vector_store.load_index():
-            self.is_initialized = True
-            logger.info("Loaded existing vector store")
+        # Initialize data first
+        publications = self.processor.get_all_publications()
+        if not publications:
+            logger.info("No publications found, loading from JSON...")
+            from data_processor import initialize_data
+            initialize_data()
+        
+        # Initialize simple search
+        self.search_engine.initialize()
+        self.is_initialized = self.search_engine.is_initialized
+        
+        if self.is_initialized:
+            logger.info("RAG pipeline initialized successfully")
         else:
-            logger.info("Creating new vector store...")
-            # Get publications and create vector store
-            publications = self.processor.get_all_publications()
-            if publications:
-                chunks = self.processor.create_document_chunks(publications)
-                if chunks:
-                    self.vector_store.create_index(chunks)
-                    self.is_initialized = True
-                    logger.info("Created new vector store")
-                else:
-                    logger.error("No document chunks created")
-            else:
-                logger.error("No publications found in database")
+            logger.error("Failed to initialize RAG pipeline")
     
     def retrieve_documents(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
         """Retrieve relevant documents for a query"""
@@ -46,7 +43,7 @@ class RAGPipeline:
             logger.error("RAG pipeline not initialized")
             return []
         
-        return self.vector_store.search(query, k=top_k)
+        return self.search_engine.search(query, top_k=top_k)
     
     def generate_response(self, query: str, retrieved_docs: List[Dict[str, Any]]) -> str:
         """Generate response using retrieved documents"""
@@ -133,11 +130,11 @@ Please provide a comprehensive answer based on the information available in thes
     
     def get_system_status(self) -> Dict[str, Any]:
         """Get system status and statistics"""
-        vector_stats = self.vector_store.get_stats()
+        search_stats = self.search_engine.get_stats()
         
         return {
             'initialized': self.is_initialized,
-            'vector_store_stats': vector_stats,
+            'vector_store_stats': search_stats,
             'openai_configured': bool(os.environ.get("OPENAI_API_KEY"))
         }
 
