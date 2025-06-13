@@ -20,7 +20,7 @@ def index():
             flash('System initialization failed. Please check configuration.', 'error')
     
     # Get recent queries for display
-    recent_queries = QueryHistory.query.order_by(QueryHistory.timestamp.desc()).limit(5).all()
+    recent_queries = db.session.query(QueryHistory).order_by(QueryHistory.timestamp.desc()).limit(5).all()
     
     # Get system status
     status = rag_pipeline.get_system_status()
@@ -57,7 +57,7 @@ def ask_question():
                              answer=result['answer'],
                              retrieved_docs=result['retrieved_docs'],
                              response_time=result['response_time'],
-                             recent_queries=QueryHistory.query.order_by(QueryHistory.timestamp.desc()).limit(5).all(),
+                             recent_queries=db.session.query(QueryHistory).order_by(QueryHistory.timestamp.desc()).limit(5).all(),
                              system_status=rag_pipeline.get_system_status())
     
     except Exception as e:
@@ -106,9 +106,7 @@ def system_status():
 def query_history():
     """Query history page"""
     page = request.args.get('page', 1, type=int)
-    queries = QueryHistory.query.order_by(QueryHistory.timestamp.desc()).paginate(
-        page=page, per_page=20, error_out=False
-    )
+    queries = db.session.query(QueryHistory).order_by(QueryHistory.timestamp.desc()).limit(20).offset((page-1)*20).all()
     return render_template('history.html', queries=queries)
 
 @app.route('/initialize', methods=['POST'])
@@ -129,8 +127,7 @@ def initialize_system():
     return redirect(url_for('index'))
 
 # Initialize data on startup
-@app.before_first_request
-def startup():
+def initialize_system_startup():
     """Initialize system on startup"""
     try:
         initialize_data()
@@ -138,3 +135,5 @@ def startup():
         logger.info("System initialized successfully on startup")
     except Exception as e:
         logger.error(f"Error during startup initialization: {e}")
+
+# Initialize will be done manually via the /initialize endpoint

@@ -35,16 +35,25 @@ class VectorStore:
         """Create FAISS index from documents"""
         logger.info(f"Creating vector index for {len(documents)} documents")
         
-        # Generate embeddings for all documents
+        # Generate embeddings for all documents with rate limiting
         embeddings = []
         self.documents = documents
         
+        import time
         for i, doc in enumerate(documents):
-            if i % 10 == 0:
+            if i % 5 == 0:
                 logger.info(f"Processing document {i+1}/{len(documents)}")
+                # Add delay to respect rate limits
+                if i > 0:
+                    time.sleep(1)
             
-            embedding = self.get_embedding(doc['text'])
-            embeddings.append(embedding)
+            try:
+                embedding = self.get_embedding(doc['text'])
+                embeddings.append(embedding)
+            except Exception as e:
+                logger.warning(f"Failed to get embedding for document {i}: {e}")
+                # Use zero vector as fallback
+                embeddings.append([0.0] * self.embeddings_dim)
         
         # Convert to numpy array
         embeddings_array = np.array(embeddings, dtype=np.float32)
