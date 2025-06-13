@@ -1,0 +1,128 @@
+/* Custom styles for RAG Assistant */
+
+:root {
+    --bs-body-bg: #1a1a1a;
+    --bs-body-color: #e9ecef;
+}
+
+/* Smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Navigation */
+.navbar {
+    backdrop-filter: blur(10px);
+    background-color: rgba(33, 37, 41, 0.95) !important;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+/* Cards */
+.card {
+    transition: transform 0.2s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* Form controls */
+.form-control:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Buttons */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Answer content */
+.answer-content {
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+
+/* Example queries */
+.example-query {
+    transition: all 0.2s ease;
+}
+
+.example-query:hover {
+    background-color: var(--bs-secondary) !important;
+    color: white !important;
+}
+
+/* Status badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Source publications */
+.card h-100 {
+    min-height: 200px;
+}
+
+/* Footer */
+footer {
+    background-color: rgba(33, 37, 41, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .btn-lg {
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+    }
+}
+
+/* Animation for cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Code and technical content */
+code {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.9em;
+}
+
+/* Highlight search results */
+.search-highlight {
+    background-color: rgba(255, 193, 7, 0.3);
+    padding: 0.1rem 0.2rem;
+    border-radius: 0.2rem;
+}

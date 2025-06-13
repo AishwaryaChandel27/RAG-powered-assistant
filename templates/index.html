@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto text-center">
+            <h1 class="display-4 mb-3">
+                <i data-feather="search" class="me-2"></i>
+                AI/ML Publications Assistant
+            </h1>
+            <p class="lead text-muted">
+                Ask questions about AI/ML research publications and get intelligent answers powered by RAG technology
+            </p>
+            
+            {% if system_status %}
+            <div class="d-flex justify-content-center align-items-center mt-3">
+                <span class="badge {% if system_status.initialized %}bg-success{% else %}bg-warning{% endif %} me-2">
+                    <i data-feather="{% if system_status.initialized %}check-circle{% else %}alert-circle{% endif %}" class="me-1" width="14" height="14"></i>
+                    {% if system_status.initialized %}System Ready{% else %}Initializing...{% endif %}
+                </span>
+                {% if system_status.vector_store_stats %}
+                <small class="text-muted">
+                    {{ system_status.vector_store_stats.total_documents }} documents indexed
+                </small>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Query Form -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('ask_question') }}">
+                        <div class="mb-3">
+                            <label for="query" class="form-label fw-bold">
+                                <i data-feather="message-circle" class="me-1"></i>
+                                Ask a Question
+                            </label>
+                            <textarea class="form-control form-control-lg" 
+                                    id="query" 
+                                    name="query" 
+                                    rows="3" 
+                                    placeholder="e.g., What are the main approaches to RAG implementation mentioned in the publications?"
+                                    required>{{ query or '' }}</textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i data-feather="send" class="me-2"></i>
+                            Get Answer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Answer Section -->
+    {% if answer %}
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="message-square" class="me-2"></i>
+                        Answer
+                        {% if response_time %}
+                        <small class="opacity-75 ms-2">({{ "%.2f"|format(response_time) }}s)</small>
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Question:</strong> {{ query }}
+                    </div>
+                    <div class="answer-content">
+                        {{ answer | replace('\n', '<br>') | safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Retrieved Documents -->
+    {% if retrieved_docs %}
+    <div class="row mb-5">
+        <div class="col-lg-10 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="file-text" class="me-2"></i>
+                        Source Publications ({{ retrieved_docs|length }})
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for doc in retrieved_docs[:3] %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-secondary">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ doc.metadata.title }}</h6>
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            <i data-feather="user" class="me-1" width="14" height="14"></i>
+                                            {{ doc.metadata.username }}
+                                        </small>
+                                    </p>
+                                    <p class="card-text">
+                                        {{ doc.text[:150] }}{% if doc.text|length > 150 %}...{% endif %}
+                                    </p>
+                                    {% if doc.metadata.license %}
+                                    <small class="text-muted">
+                                        <i data-feather="shield" class="me-1" width="12" height="12"></i>
+                                        {{ doc.metadata.license }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Example Questions -->
+    <div class="row mb-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="help-circle" class="me-2"></i>
+                        Example Questions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <button class="btn btn-outline-secondary btn-sm w-100 text-start example-query">
+                                        What are the main approaches to RAG implementation?
+                                    </button>
+                                </li>
+                                <li class="mb-2">
+                                    <button class="btn btn-outline-secondary btn-sm w-100 text-start example-query">
+                                        How do transformers work in computer vision?
+                                    </button>
+                                </li>
+                                <li class="mb-2">
+                                    <button class="btn btn-outline-secondary btn-sm w-100 text-start example-query">
+                                        What are the benefits of agentic AI systems?
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li class="mb-2">
+                                    <button class="btn btn-outline-secondary btn-sm w-100 text-start example-query">
+                                        How can I contribute to open-source AI projects?
+                                    </button>
+                                </li>
+                                <li class="mb-2">
+                                    <button class="btn btn-outline-secondary btn-sm w-100 text-start example-query">
+                                        What are the latest trends in time series analysis?
+                                    </button>
+                                </li>
+                                <li class="mb-2">
+                                    <button class="btn btn-outline-secondary btn-sm w-100 text-start example-query">
+                                        How do auto-encoders work for image compression?
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Queries -->
+    {% if recent_queries %}
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">
+                        <i data-feather="clock" class="me-2"></i>
+                        Recent Questions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for query_item in recent_queries %}
+                    <div class="d-flex justify-content-between align-items-start mb-2 pb-2 {% if not loop.last %}border-bottom{% endif %}">
+                        <div class="flex-grow-1">
+                            <button class="btn btn-link p-0 text-start example-query" style="text-decoration: none;">
+                                {{ query_item.query }}
+                            </button>
+                        </div>
+                        <small class="text-muted ms-2">
+                            {{ query_item.timestamp.strftime('%m/%d %H:%M') }}
+                        </small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
