@@ -2,6 +2,10 @@
 
 A comprehensive Flask-based Retrieval-Augmented Generation (RAG) system that enables intelligent querying of AI/ML research publications. Built with modern web technologies and designed for both educational and professional use.
 
+## 📽️ Demo Video
+
+[![Watch the demo](https://img.youtube.com/vi/SN4RmlC6mpw/hqdefault.jpg)](https://youtu.be/SN4RmlC6mpw)
+
 ## 🚀 Overview
 
 This RAG assistant processes a curated collection of AI/ML publications and provides intelligent answers to user questions through an intuitive web interface. The system combines document retrieval with intelligent response generation to deliver contextual, accurate information from the publication database.
